@@ -1,158 +1,117 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"><head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
     <title>Scan QR Code via Kamera</title>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: url('/images/bg-image.jpg') no-repeat center center fixed;
-            background-size: cover;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif']
+                    }
+                }
+            }
         }
-
-        .container {
-            background: #ffffff;
-            padding: 2.5rem 2rem;
-            border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0, 128, 96, 0.15);
-            text-align: center;
-            max-width: 520px;
-            width: 90%;
-        }
-
-        h1 {
-            color: #059669;
-            font-size: 1.9rem;
-            margin-bottom: 1.2rem;
-        }
-
-        #reader {
-            width: 100%;
-            max-width: 400px;
-            height: 320px;
-            margin: 0 auto;
-        }
-
-        #result {
-            display: none;
-            margin-top: 1.5rem;
-            font-size: 1rem;
-            color: #065f46;
-            background-color: #d1fae5;
-            padding: 1rem;
-            border-radius: 10px;
-            border: 1px solid #6ee7b7;
-        }
-
-        .label {
-            font-weight: 600;
-            color: #047857;
-        }
-
-        .back-button {
-            display: none;
-            margin-top: 2rem;
-            padding: 0.6rem 1.4rem;
-            background-color: #34d399;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-
-        .back-button:hover {
-            background-color: #059669;
-        }
-    </style>
+    </script>
 </head>
-<body>
-<div class="container">
-    <h1>Scan Kehadiran Tamu</h1>
-    <div id="reader"></div>
-    <div id="result"></div>
-    <a href="/scan" class="back-button">⬅ Kembali</a>
+<body class="font-inter h-screen w-screen m-0 p-0 bg-cover bg-center bg-fixed flex items-center justify-center"
+      style="background-image: url('/images/bg-image.jpg'); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);">
+
+<!-- Fullscreen container -->
+<div class="relative w-full h-full px-4 py-6 flex flex-col items-center justify-start">
+    <h1 class="text-emerald-700 text-[clamp(1.8rem,2.5vw+1rem,2.5rem)] mb-4 text-center font-extrabold bg-white/70 px-4 py-2 rounded-xl shadow-md backdrop-blur-sm">
+        Scan Kehadiran Tamu
+    </h1>
+
+    <!-- QR Reader -->
+    <div id="reader" class="w-full h-[70vh] rounded-xl overflow-hidden shadow-lg bg-white"></div>
+
+    <!-- Tombol Kamera Switch -->
+    <button onclick="flipCamera()" class="absolute top-4 right-4 bg-white text-emerald-600 font-bold py-1 px-3 rounded shadow z-50">
+        🔄 Kamera
+    </button>
+
+    <!-- Hasil Scan -->
+    <div id="result" class="hidden mt-6 text-base text-emerald-800 bg-emerald-100 p-4 rounded-lg border border-emerald-300 break-words w-full"></div>
+
+    <!-- Tombol Kembali -->
+    <a href="/scan" class="back-button hidden mt-6 px-6 py-2.5 bg-emerald-400 text-white font-bold rounded-lg transition duration-300 hover:bg-emerald-600">
+        ⬅ Kembali
+    </a>
 </div>
 
 <script>
-        function formatDateTime(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-
-            const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-            const month = monthNames[date.getMonth()];
-
-            const year = date.getFullYear();
-
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-            const seconds = String(date.getSeconds()).padStart(2, '0');
-
-            return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
-        }
-
-        function onScanSuccess(decodedText) {
-            const now = new Date();
-            const waktuKedatangan = formatDateTime(now);
-            document.getElementById('result').style.display = "block";
-            document.querySelector('.back-button').style.display = "inline-block";
-
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = `
-                <div><span class="label">📦 Hasil Scan:</span><br>${decodedText}</div>
-                <div style="margin-top: 0.8rem;"><span class="label">⏰ Jam Kedatangan:</span><br>${waktuKedatangan}</div>
-            `;
-            resultDiv.style.display = "block";
-            document.getElementById('reader').style.display = "none";
-
-            // Kirim data ke API backend
-            fetch('/api/scan/save', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    hasil: decodedText,
-                    waktu: waktuKedatangan
-                })
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Gagal menyimpan data ke server");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Data berhasil disimpan:", data);
-                })
-                .catch(error => {
-                    console.error("Error saat menyimpan:", error);
-                });
-
-            html5QrcodeScanner.clear();
-            /*setTimeout(() => {
-                window.location.href = "/scan";
-            }, 10000);*/
-
+    function formatDateTime(date) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        const month = monthNames[date.getMonth()];
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
     }
 
-    // const html5QrcodeScanner = new Html5QrcodeScanner(
-    //     "reader", { fps: 10, qrbox: 250 });
+    function onScanSuccess(decodedText) {
+        const now = new Date();
+        const waktuKedatangan = formatDateTime(now);
 
-        const html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader",
-            {
-                fps: 10,
-                qrbox: { width: 300, height: 300 }
-            }
-        );
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = `
+            <div><span class="font-semibold text-emerald-700">📦 Hasil Scan:</span><br>${decodedText}</div>
+            <div class="mt-2"><span class="font-semibold text-emerald-700">⏰ Jam Kedatangan:</span><br>${waktuKedatangan}</div>
+        `;
+        resultDiv.style.display = "block";
+        document.querySelector('.back-button').style.display = "inline-block";
+        document.getElementById('reader').style.display = "none";
+
+        fetch('/api/scan/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ hasil: decodedText, waktu: waktuKedatangan })
+        }).then(response => {
+            if (!response.ok) throw new Error("Gagal menyimpan data ke server");
+            return response.json();
+        }).then(data => console.log("Data berhasil disimpan:", data))
+            .catch(error => console.error("Error saat menyimpan:", error));
+
+        html5QrcodeScanner.clear();
+    }
+
+    const html5QrcodeScanner = new Html5QrcodeScanner("reader", {
+        fps: 10,
+        qrbox: function(viewfinderWidth, viewfinderHeight) {
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            return {
+                width: Math.floor(minEdge * 0.9),
+                height: Math.floor(minEdge * 0.9)
+            };
+        }
+    });
+
+    let currentCamera = "environment";
+    function flipCamera() {
+        html5QrcodeScanner.clear().then(() => {
+            html5QrcodeScanner.start(
+                currentCamera === "environment" ? "user" : "environment",
+                {
+                    fps: 10,
+                    qrbox: function(w, h) {
+                        const minEdge = Math.min(w, h);
+                        return {
+                            width: Math.floor(minEdge * 0.9),
+                            height: Math.floor(minEdge * 0.9)
+                        };
+                    }
+                },
+                onScanSuccess
+            );
+            currentCamera = currentCamera === "environment" ? "user" : "environment";
+        });
+    }
 
     html5QrcodeScanner.render(onScanSuccess);
 </script>
