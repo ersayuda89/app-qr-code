@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>QR Decode Result</title>
+</head>
+<body>
+<h1>Hasil Decode QR Code</h1>
+<p th:text="${result}"></p>
+
+<div th:if="${image}">
+    <h3>Gambar QR yang diupload:</h3>
+    <img th:src="'data:image/png;base64,' + ${image}" alt="Uploaded QR Code" width="200"/>
+</div>
+
+<a href="/upload">Kembali</a>
+</body>
+</html>
