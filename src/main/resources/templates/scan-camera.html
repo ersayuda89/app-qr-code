@@ -70,6 +70,9 @@
         }).then(data => console.log("Data berhasil disimpan:", data))
             .catch(error => console.error("Error saat menyimpan:", error));
 
+        // 🔊 Putar suara notifikasi
+        document.getElementById('success-sound').play();
+
         window.location.href = `/result?nama=${encodeURIComponent(decodedText)}&waktu=${encodeURIComponent(waktuKedatangan)}`;
 
         html5QrcodeScanner.clear();
@@ -88,5 +91,7 @@
 
     html5QrcodeScanner.render(onScanSuccess);
 </script>
+
+<audio id="success-sound" src="/sounds/success.mp3" preload="auto"></audio>
 </body>
 </html>
