@@ -1,17 +1,42 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>QR Decode Result</title>
+    <meta charset="UTF-8">
+    <title>Hasil Kehadiran</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-<h1>Hasil Decode QR Code</h1>
-<p th:text="${result}"></p>
+<body class="bg-cover bg-center min-h-screen font-inter flex items-center justify-center px-4 py-8"
+      style="background-image: url('/images/bg-image.jpg'); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);">
 
-<div th:if="${image}">
-    <h3>Gambar QR yang diupload:</h3>
-    <img th:src="'data:image/png;base64,' + ${image}" alt="Uploaded QR Code" width="200"/>
+<!-- Wrapper -->
+<div class="bg-white/80 rounded-2xl shadow-2xl w-full max-w-md p-6 md:p-8 text-center backdrop-blur-sm border border-emerald-200">
+    <!-- Heading -->
+    <h2 class="text-xl md:text-2xl font-extrabold text-emerald-700 mb-4">📦 Hasil Scan Kehadiran</h2>
+
+    <!-- Data Scan -->
+    <div class="text-left text-emerald-900 text-base space-y-2 mb-6">
+        <p><span class="font-semibold">Nama Tamu:</span> <span th:text="${hasil}"></span></p>
+        <p><span class="font-semibold">Waktu Kedatangan:</span> <span th:text="${waktu}"></span></p>
+    </div>
+
+    <!-- Tombol -->
+    <a href="/scan"
+       class="inline-block bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm md:text-base px-5 py-2.5 rounded-xl transition duration-200 shadow-md">
+        🔄 Scan Ulang
+    </a>
 </div>
 
-<a href="/upload">Kembali</a>
 </body>
 </html>

@@ -29,13 +29,8 @@
     <!-- QR Reader -->
     <div id="reader" class="w-full h-[70vh] rounded-xl overflow-hidden shadow-lg bg-white"></div>
 
-    <!-- Tombol Kamera Switch -->
-    <button onclick="flipCamera()" class="absolute top-4 right-4 bg-white text-emerald-600 font-bold py-1 px-3 rounded shadow z-50">
-        🔄 Kamera
-    </button>
-
     <!-- Hasil Scan -->
-    <div id="result" class="hidden mt-6 text-base text-emerald-800 bg-emerald-100 p-4 rounded-lg border border-emerald-300 break-words w-full"></div>
+    <div id="result" class="hidden mt-6 text-lg leading-relaxed text-emerald-900 bg-white/80 p-6 rounded-xl border border-emerald-300 shadow-lg backdrop-blur-sm w-[90%] max-w-md"></div>
 
     <!-- Tombol Kembali -->
     <a href="/scan" class="back-button hidden mt-6 px-6 py-2.5 bg-emerald-400 text-white font-bold rounded-lg transition duration-300 hover:bg-emerald-600">
@@ -64,9 +59,9 @@
             <div><span class="font-semibold text-emerald-700">📦 Hasil Scan:</span><br>${decodedText}</div>
             <div class="mt-2"><span class="font-semibold text-emerald-700">⏰ Jam Kedatangan:</span><br>${waktuKedatangan}</div>
         `;
-        resultDiv.style.display = "block";
-        document.querySelector('.back-button').style.display = "inline-block";
-        document.getElementById('reader').style.display = "none";
+        // resultDiv.style.display = "block";
+        // document.querySelector('.back-button').style.display = "inline-block";
+        // document.getElementById('reader').style.display = "none";
 
         fetch('/api/scan/save', {
             method: 'POST',
@@ -77,6 +72,8 @@
             return response.json();
         }).then(data => console.log("Data berhasil disimpan:", data))
             .catch(error => console.error("Error saat menyimpan:", error));
+
+        window.location.href = `/result?nama=${encodeURIComponent(decodedText)}&waktu=${encodeURIComponent(waktuKedatangan)}`;
 
         html5QrcodeScanner.clear();
     }
@@ -91,27 +88,6 @@
             };
         }
     });
-
-    let currentCamera = "environment";
-    function flipCamera() {
-        html5QrcodeScanner.clear().then(() => {
-            html5QrcodeScanner.start(
-                currentCamera === "environment" ? "user" : "environment",
-                {
-                    fps: 10,
-                    qrbox: function(w, h) {
-                        const minEdge = Math.min(w, h);
-                        return {
-                            width: Math.floor(minEdge * 0.9),
-                            height: Math.floor(minEdge * 0.9)
-                        };
-                    }
-                },
-                onScanSuccess
-            );
-            currentCamera = currentCamera === "environment" ? "user" : "environment";
-        });
-    }
 
     html5QrcodeScanner.render(onScanSuccess);
 </script>
