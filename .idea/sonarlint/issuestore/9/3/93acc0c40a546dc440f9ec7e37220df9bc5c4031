@@ -1,0 +1,5 @@
+
+[	java:S112@"FDefine and throw a dedicated exception instead of using a generic one.(ÏÁ›¬
+[	java:S112U"FDefine and throw a dedicated exception instead of using a generic one.(–Ö³ÿ
+}
+java:S4087N"bRemove this "close" call; closing the resource is handled automatically by the try-with-resources.(à¹Šíúÿÿÿÿ
