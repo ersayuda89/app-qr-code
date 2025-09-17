@@ -5,14 +5,11 @@
     <title>Scan QR Kehadiran</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="h-screen w-screen bg-black flex flex-col items-center justify-center relative">
 
-<!-- Overlay Scanner -->
 <div class="absolute inset-0 bg-black/80 flex flex-col items-center justify-center gap-6 p-4 overflow-y-auto">
-    <!-- Kotak Form Input -->
     <div class="w-[100%] max-w-sm bg-white rounded-3xl shadow-2xl flex flex-col items-center p-6">
         <h2 class="text-black-600 text-base sm:text-lg mb-6">Cetak QRCODE Kehadiran</h2>
         <form method="post" action="/generate/qrcode" class="w-full">
@@ -29,7 +26,6 @@
         </form>
     </div>
 
-    <!-- Kotak Hasil QR Code -->
     <div th:if="${qrImage}" class="w-full">
         <div class="w-[100%] max-w-sm bg-white rounded-3xl shadow-2xl flex flex-col items-center p-6">
             <div class="flex flex-col justify-center items-center gap-4">
